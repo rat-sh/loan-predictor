@@ -16,8 +16,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application code
 COPY . .
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
 # Expose the port the app will run on
 EXPOSE 8000
 
-# Start the Django development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Start with gunicorn (production server)
+CMD ["gunicorn", "mysite.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120"]

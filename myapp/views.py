@@ -4,7 +4,13 @@ import numpy as np
 import joblib
 from django.shortcuts import render
 
-MODEL_DIR  = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models")
+BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_DIR  = os.path.join(BASE_DIR, "models")
+
+# Debug log so you can see the path in Docker logs
+import sys
+print(f"[Lokkhi] MODEL_DIR = {MODEL_DIR}", file=sys.stderr)
+print(f"[Lokkhi] PKL count = {len(glob.glob(os.path.join(MODEL_DIR, '*_model.pkl')))}", file=sys.stderr)
 TARGET_COL = "Loan_Status"
 
 

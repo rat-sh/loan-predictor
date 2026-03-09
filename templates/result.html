@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lokkhi — Results</title>
+<title>LoanSathi — Results</title>
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -209,7 +209,7 @@ tbody td:first-child { font-weight: 600; color: var(--paper); }
 <body>
 
 <nav>
-  <a href="/" class="nav-logo">Lokkhi</a>
+  <a href="/" class="nav-logo">LoanSathi</a>
   <div class="nav-actions">
     <a href="/loan/" class="nav-btn">Try Again</a>
     {% if mode %}
@@ -548,7 +548,7 @@ function downloadPDF() {
   doc.setTextColor(201, 168, 76);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(22);
-  doc.text('LOKKHI', margin, 18);
+  doc.text('LoanSathi', margin, 18);
   doc.setFontSize(9);
   doc.setTextColor(138, 138, 138);
   doc.text('Loan Prediction Report', margin, 26);
@@ -706,11 +706,11 @@ function downloadPDF() {
     doc.setFillColor(10,10,15);
     doc.rect(0, 287, W, 10, 'F');
     doc.setTextColor(138,138,138); doc.setFontSize(7); doc.setFont('helvetica','normal');
-    doc.text('Lokkhi Loan Predictor — Powered by ML', margin, 293);
+    doc.text('LoanSathi Loan Predictor — Powered by ML', margin, 293);
     doc.text('Page ' + i + ' of ' + pages, W - margin, 293, { align: 'right' });
   }
 
-  doc.save('lokkhi_loan_report.pdf');
+  doc.save('loansathi_loan_report.pdf');
 }
 </script>
 </body>
