@@ -23,9 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8#p2cm^!i2md6=#w6%!gb1tv4*un#dk9(e!9vr54hvh++m6f*u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'loan-predictor-drea.onrender.com'
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://loan-predictor-drea.onrender.com',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
 
 
 # Application definition
