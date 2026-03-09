@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lokkhi — Apply</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #0a0a0f;
+  --paper:    #f5f0e8;
+  --gold:     #c9a84c;
+  --gold2:    #e8c96a;
+  --fog:      #8a8a8a;
+  --border:   rgba(255,255,255,.08);
+  --input-bg: rgba(255,255,255,.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Cabinet Grotesk', sans-serif;
+  background: var(--ink);
+  color: var(--paper);
+  min-height: 100vh;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: .4;
+}
+
+/* NAV */
+nav {
+  position: relative; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 60px;
+  border-bottom: 1px solid rgba(201,168,76,.15);
+}
+.nav-logo {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--gold);
+  letter-spacing: -1px; text-decoration: none;
+}
+.nav-back {
+  font-size: 13px; color: var(--fog); text-decoration: none;
+  border: 1px solid rgba(201,168,76,.3); padding: 8px 18px;
+  border-radius: 3px; transition: all .2s;
+}
+.nav-back:hover { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+
+/* LAYOUT */
+.page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 65px);
+  position: relative; z-index: 1;
+}
+
+/* LEFT — intro panel */
+.left-panel {
+  padding: 70px 60px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; justify-content: center;
+  background: radial-gradient(ellipse 80% 60% at 20% 40%, rgba(201,168,76,.07) 0%, transparent 70%);
+}
+.panel-tag {
+  display: inline-block;
+  border: 1px solid rgba(201,168,76,.4); color: var(--gold);
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 5px 14px; border-radius: 2px;
+  margin-bottom: 28px; animation: fadeUp .5s ease both;
+}
+.panel-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(2.4rem, 4vw, 3.8rem);
+  font-weight: 700; line-height: .95; letter-spacing: -2px;
+  margin-bottom: 20px; animation: fadeUp .5s .1s ease both;
+}
+.panel-title .gold { color: var(--gold); }
+.panel-desc {
+  font-size: 15px; color: var(--fog); line-height: 1.7;
+  max-width: 380px; margin-bottom: 40px;
+  animation: fadeUp .5s .2s ease both;
+}
+.panel-steps { animation: fadeUp .5s .3s ease both; }
+.pstep {
+  display: flex; align-items: flex-start; gap: 16px;
+  margin-bottom: 20px;
+}
+.pstep-num {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border: 1px solid rgba(201,168,76,.4); color: var(--gold);
+  font-family: 'Clash Display', sans-serif; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; border-radius: 2px;
+  margin-top: 2px;
+}
+.pstep-text h4 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 3px;
+}
+.pstep-text p { font-size: 12px; color: var(--fog); line-height: 1.5; }
+
+/* RIGHT — form */
+.right-panel {
+  padding: 50px 60px;
+  overflow-y: auto;
+}
+.sec-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.form-section { margin-bottom: 32px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.field label {
+  display: block; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--fog); margin-bottom: 6px;
+}
+.field input,
+.field select {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--paper);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 14px; font-weight: 500;
+  padding: 10px 13px;
+  transition: border-color .2s, background .2s;
+  appearance: none;
+}
+.field input:focus,
+.field select:focus { outline: none; border-color: var(--gold); background: rgba(201,168,76,.05); }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 34px; cursor: pointer;
+}
+.field select option { background: #1a1a24; }
+
+/* SUBMIT BUTTONS */
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.btn {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: .5px;
+  border: none; border-radius: 6px; cursor: pointer;
+  padding: 14px; transition: all .2s;
+}
+.btn-one {
+  background: transparent;
+  border: 1px solid rgba(201,168,76,.5);
+  color: var(--gold);
+}
+.btn-one:hover { background: rgba(201,168,76,.1); }
+.btn-all {
+  background: var(--gold); color: var(--ink);
+  position: relative; overflow: hidden;
+}
+.btn-all::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gold2); transform: translateX(-100%);
+  transition: transform .3s ease;
+}
+.btn-all:hover::before { transform: translateX(0); }
+.btn-all span { position: relative; z-index: 1; }
+
+/* bank select row */
+.bank-select-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 12px; }
+.bank-select-row .field { flex: 1; margin-bottom: 0; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 860px) {
+  nav { padding: 18px 24px; }
+  .page { grid-template-columns: 1fr; }
+  .left-panel { padding: 40px 24px; border-right: none; border-bottom: 1px solid var(--border); }
+  .right-panel { padding: 32px 24px; }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 500px) {
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .btn-row { grid-template-columns: 1fr; }
+  .bank-select-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Lokkhi</a>
+  <a href="/" class="nav-back">← Home</a>
+</nav>
+
+<div class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="panel-tag">Loan Intelligence</div>
+    <h1 class="panel-title">Find your<br><span class="gold">best bank</span><br>instantly</h1>
+    <p class="panel-desc">One application. 57 banks. Our AI checks them all and tells you exactly where you'll get approved.</p>
+    <div class="panel-steps">
+      <div class="pstep">
+        <div class="pstep-num">01</div>
+        <div class="pstep-text">
+          <h4>Fill your details</h4>
+          <p>Income, loan amount, credit history — takes 2 minutes.</p>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="pstep-num">02</div>
+        <div class="pstep-text">
+          <h4>Choose a bank or check all</h4>
+          <p>Pick one specific bank or run across all 57 at once.</p>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="pstep-num">03</div>
+        <div class="pstep-text">
+          <h4>See your results</h4>
+          <p>Get approval status, confidence score and eligibility rating.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL — FORM -->
+  <div class="right-panel">
+    <form method="POST" action="/result/">
+      {% csrf_token %}
+
+      <div class="form-section">
+        <div class="sec-title">Personal Details</div>
+        <div class="grid3">
+          <div class="field"><label>Gender</label>
+            <select name="gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="field"><label>Married</label>
+            <select name="married">
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="field"><label>Dependents</label>
+            <select name="dependents">
+              <option value="0">0</option><option value="1">1</option>
+              <option value="2">2</option><option value="3+">3+</option>
+            </select>
+          </div>
+          <div class="field"><label>Education</label>
+            <select name="education">
+              <option value="Graduate">Graduate</option>
+              <option value="Not Graduate">Not Graduate</option>
+            </select>
+          </div>
+          <div class="field"><label>Self Employed</label>
+            <select name="self_employed">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          <div class="field"><label>Property Area</label>
+            <select name="property_area">
+              <option value="Urban">Urban</option>
+              <option value="Semiurban">Semiurban</option>
+              <option value="Rural">Rural</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="sec-title">Financial Details</div>
+        <div class="grid2">
+          <div class="field"><label>Applicant Income (₹/month)</label>
+            <input type="number" name="applicant_income" placeholder="e.g. 50000">
+          </div>
+          <div class="field"><label>Co-applicant Income (₹)</label>
+            <input type="number" name="coapplicant_income" placeholder="e.g. 0">
+          </div>
+          <div class="field"><label>Loan Amount (₹ thousands)</label>
+            <input type="number" name="loan_amount" placeholder="e.g. 150">
+          </div>
+          <div class="field"><label>Loan Term</label>
+            <select name="loan_term">
+              <option value="360">360 days — 30 years</option>
+              <option value="180">180 days — 15 years</option>
+              <option value="120">120 days — 10 years</option>
+              <option value="60">60 days — 5 years</option>
+            </select>
+          </div>
+          <div class="field"><label>Credit History</label>
+            <select name="credit_history">
+              <option value="1.0">Good — Cleared debts</option>
+              <option value="0.0">Bad — Has dues</option>
+            </select>
+          </div>
+          <div class="field"><label>Loan Purpose</label>
+            <select name="loan_purpose">
+              <option value="Home">Home</option>
+              <option value="Personal">Personal</option>
+              <option value="Education">Education</option>
+              <option value="Vehicle">Vehicle</option>
+              <option value="Business">Business</option>
+              <option value="Gold">Gold</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="sec-title">Check One Bank</div>
+        <div class="bank-select-row">
+          <div class="field">
+            <label>Select Bank</label>
+            <select name="bank_name">
+              {% for b in bank_names %}
+                <option value="{{ b }}">{{ b }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button class="btn btn-one" name="predict_one" value="1">Check →</button>
+        </div>
+
+        <div class="sec-title" style="margin-top:20px">Check All 57 Banks</div>
+        <button class="btn btn-all" name="predict_all" value="1" style="width:100%">
+          <span>Run Across All Banks</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

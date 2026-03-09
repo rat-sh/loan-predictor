@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lokkhi — Results</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root {
+  --ink:    #0a0a0f;
+  --paper:  #f5f0e8;
+  --gold:   #c9a84c;
+  --gold2:  #e8c96a;
+  --fog:    #8a8a8a;
+  --green:  #2ecc71;
+  --red:    #e74c3c;
+  --card:   rgba(255,255,255,.04);
+  --border: rgba(255,255,255,.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Cabinet Grotesk', sans-serif;
+  background: var(--ink); color: var(--paper);
+  min-height: 100vh;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: .4;
+}
+
+/* NAV */
+nav {
+  position: relative; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 60px;
+  border-bottom: 1px solid rgba(201,168,76,.15);
+}
+.nav-logo {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--gold);
+  letter-spacing: -1px; text-decoration: none;
+}
+.nav-actions { display: flex; gap: 10px; }
+.nav-btn {
+  font-size: 13px; color: var(--fog); text-decoration: none;
+  border: 1px solid rgba(201,168,76,.3); padding: 8px 18px;
+  border-radius: 3px; transition: all .2s; cursor: pointer;
+  font-family: 'Cabinet Grotesk', sans-serif; background: transparent;
+}
+.nav-btn:hover { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+.nav-btn.primary { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.nav-btn.primary:hover { background: var(--gold2); }
+
+/* PAGE */
+.page { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 50px 60px 80px; }
+
+/* ── SINGLE BANK RESULT ── */
+.single-hero {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  margin-bottom: 60px; animation: fadeUp .5s ease both;
+}
+.verdict-card {
+  border-radius: 16px; padding: 48px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.verdict-card.ok { background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.3); }
+.verdict-card.no { background: rgba(231,76,60,.08);  border: 1px solid rgba(231,76,60,.3); }
+.vc-tag { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--fog); margin-bottom: 12px; }
+.vc-bank { font-family: 'Clash Display', sans-serif; font-size: 2rem; font-weight: 700; letter-spacing: -1px; margin-bottom: 16px; }
+.vc-verdict { font-family: 'Clash Display', sans-serif; font-size: 4rem; font-weight: 700; line-height: 1; margin-bottom: 20px; }
+.vc-verdict.ok { color: var(--green); }
+.vc-verdict.no { color: var(--red); }
+.vc-meta { display: flex; gap: 24px; }
+.vc-stat .n { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; color: var(--gold); }
+.vc-stat .l { font-size: 11px; color: var(--fog); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+.info-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 40px;
+}
+.info-title { font-family: 'Clash Display', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 24px; color: var(--fog); }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.info-row:last-child { border-bottom: none; }
+.info-row .k { font-size: 12px; color: var(--fog); letter-spacing: .5px; }
+.info-row .v { font-size: 14px; font-weight: 600; color: var(--paper); }
+
+/* ── ALL BANKS RESULT ── */
+/* Top stats row */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-bottom: 40px; animation: fadeUp .4s ease both;
+}
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px 24px; text-align: center;
+}
+.stat-card .n { font-family: 'Clash Display', sans-serif; font-size: 42px; font-weight: 700; line-height: 1; }
+.stat-card .l { font-size: 11px; color: var(--fog); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 6px; }
+.n.gold  { color: var(--gold); }
+.n.green { color: var(--green); }
+.n.red   { color: var(--red); }
+.n.white { color: var(--paper); }
+
+/* Eligibility score card */
+.score-card {
+  background: rgba(201,168,76,.06); border: 1px solid rgba(201,168,76,.2);
+  border-radius: 12px; padding: 28px 24px; text-align: center;
+}
+.score-card .n { font-family: 'Clash Display', sans-serif; font-size: 42px; font-weight: 700; line-height: 1; }
+.score-card .verdict { font-family: 'Clash Display', sans-serif; font-size: 14px; font-weight: 600; margin-top: 6px; }
+.score-card .l { font-size: 11px; color: var(--fog); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+.verdict.excellent { color: var(--green); }
+.verdict.good      { color: var(--gold); }
+.verdict.poor      { color: var(--red); }
+
+/* Charts row */
+.charts-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;
+  margin-bottom: 40px; animation: fadeUp .5s .1s ease both;
+}
+.chart-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px;
+}
+.chart-card-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--fog); margin-bottom: 20px;
+}
+.chart-card canvas { max-height: 220px; }
+
+/* Table section */
+.table-section { animation: fadeUp .5s .2s ease both; }
+.table-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+}
+.table-title { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+
+/* Filters */
+.filters { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.filter-group { display: flex; gap: 6px; }
+.filter-group-label { font-size: 10px; color: var(--fog); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.fbtn {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 20px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--fog); cursor: pointer; transition: all .15s;
+}
+.fbtn:hover { border-color: var(--gold); color: var(--gold); }
+.fbtn.active { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+/* Table */
+.tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; background: var(--card); }
+thead th {
+  background: rgba(255,255,255,.03);
+  font-family: 'Clash Display', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--fog); padding: 14px 18px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,.03); }
+tbody td { padding: 13px 18px; font-size: 14px; color: rgba(245,240,232,.8); }
+tbody td:first-child { font-weight: 600; color: var(--paper); }
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; font-family: 'Clash Display', sans-serif;
+}
+.pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.pill-ok { background: rgba(46,204,113,.12); color: var(--green); }
+.pill-no { background: rgba(231,76,60,.12);  color: var(--red); }
+.type-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 3px;
+  font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+}
+.type-public  { background: rgba(52,152,219,.15); color: #3498db; }
+.type-private { background: rgba(155,89,182,.15); color: #9b59b6; }
+.type-small   { background: rgba(46,204,113,.12); color: var(--green); }
+.type-foreign { background: rgba(201,168,76,.12); color: var(--gold); }
+
+/* confidence bar */
+.conf-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.conf-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.conf-bar-fill { height: 100%; border-radius: 2px; background: var(--gold); }
+.conf-num { font-size: 12px; color: var(--fog); min-width: 36px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 900px) {
+  nav { padding: 18px 24px; }
+  .page { padding: 30px 24px 60px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .charts-row { grid-template-columns: 1fr; }
+  .single-hero { grid-template-columns: 1fr; }
+  .vc-verdict { font-size: 3rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Lokkhi</a>
+  <div class="nav-actions">
+    <a href="/loan/" class="nav-btn">Try Again</a>
+    {% if mode %}
+    <button class="nav-btn" onclick="downloadPDF()">Download PDF</button>
+    {% endif %}
+    <a href="/" class="nav-btn primary">Home</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ══════════════════════════════════════
+     OPTION A — SINGLE BANK RESULT
+════════════════════════════════════════ -->
+{% if mode == "single" and result_one %}
+
+<div class="single-hero">
+  <!-- Verdict -->
+  <div class="verdict-card {% if result_one.result == 'Approved' %}ok{% else %}no{% endif %}">
+    <div class="vc-tag">Prediction Result</div>
+    <div class="vc-bank">{{ result_one.bank }}</div>
+    <div class="vc-verdict {% if result_one.result == 'Approved' %}ok{% else %}no{% endif %}">
+      {% if result_one.result == "Approved" %}Approved{% else %}Rejected{% endif %}
+    </div>
+    <div class="vc-meta">
+      {% if result_one.confidence %}
+      <div class="vc-stat">
+        <div class="n">{{ result_one.confidence }}%</div>
+        <div class="l">Confidence</div>
+      </div>
+      {% endif %}
+      <div class="vc-stat">
+        <div class="n">{{ result_one.accuracy }}%</div>
+        <div class="l">Model Accuracy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application summary -->
+  <div class="info-card">
+    <div class="info-title">Your Application</div>
+    <div class="info-row"><span class="k">Gender</span><span class="v">{{ request.POST.gender }}</span></div>
+    <div class="info-row"><span class="k">Married</span><span class="v">{{ request.POST.married }}</span></div>
+    <div class="info-row"><span class="k">Education</span><span class="v">{{ request.POST.education }}</span></div>
+    <div class="info-row"><span class="k">Applicant Income</span><span class="v">₹{{ request.POST.applicant_income }}</span></div>
+    <div class="info-row"><span class="k">Loan Amount</span><span class="v">₹{{ request.POST.loan_amount }}K</span></div>
+    <div class="info-row"><span class="k">Credit History</span><span class="v">{% if request.POST.credit_history == "1.0" %}Good{% else %}Bad{% endif %}</span></div>
+    <div class="info-row"><span class="k">Loan Purpose</span><span class="v">{{ request.POST.loan_purpose }}</span></div>
+    <div class="info-row"><span class="k">Property Area</span><span class="v">{{ request.POST.property_area }}</span></div>
+  </div>
+</div>
+
+{% endif %}
+
+
+<!-- ══════════════════════════════════════
+     OPTION B — ALL BANKS RESULT
+════════════════════════════════════════ -->
+{% if mode == "all" %}
+
+<!-- hidden data for JS -->
+<span id="d" data-approved="{{ approved|length }}" data-total="{{ total }}" style="display:none"></span>
+
+<!-- STATS ROW -->
+<div class="stats-row">
+  <div class="stat-card score-card">
+    <div class="n gold" id="scoreNum">0</div>
+    <div class="verdict" id="scoreVerdict">—</div>
+    <div class="l">Eligibility Score</div>
+  </div>
+  <div class="stat-card">
+    <div class="n white">{{ total }}</div>
+    <div class="l">Banks Checked</div>
+  </div>
+  <div class="stat-card">
+    <div class="n green">{{ approved|length }}</div>
+    <div class="l">Approved</div>
+  </div>
+  <div class="stat-card">
+    <div class="n red">{{ rejected|length }}</div>
+    <div class="l">Rejected</div>
+  </div>
+</div>
+
+<!-- CHARTS ROW -->
+<div class="charts-row">
+
+  <!-- Donut chart -->
+  <div class="chart-card">
+    <div class="chart-card-title">Approval Breakdown</div>
+    <canvas id="donutChart"></canvas>
+  </div>
+
+  <!-- Bar chart — top 8 approved by confidence -->
+  <div class="chart-card" style="grid-column: span 2">
+    <div class="chart-card-title">Top Approved Banks by Confidence</div>
+    <canvas id="barChart"></canvas>
+  </div>
+
+</div>
+
+<!-- FILTERS + TABLE -->
+<div class="table-section">
+  <div class="table-top">
+    <div class="table-title">All Banks</div>
+    <div class="filters">
+      <div>
+        <div class="filter-group-label">Result</div>
+        <div class="filter-group">
+          <button class="fbtn active" onclick="applyFilter(this)" data-result="all" data-type="all">All</button>
+          <button class="fbtn" onclick="applyFilter(this)" data-result="approved" data-type="all">Approved</button>
+          <button class="fbtn" onclick="applyFilter(this)" data-result="rejected" data-type="all">Rejected</button>
+        </div>
+      </div>
+      <div>
+        <div class="filter-group-label">Bank Type</div>
+        <div class="filter-group">
+          <button class="fbtn type-btn active" onclick="applyTypeFilter(this)" data-type="all">All</button>
+          <button class="fbtn type-btn" onclick="applyTypeFilter(this)" data-type="public">Public</button>
+          <button class="fbtn type-btn" onclick="applyTypeFilter(this)" data-type="private">Private</button>
+          <button class="fbtn type-btn" onclick="applyTypeFilter(this)" data-type="small">Small Finance</button>
+          <button class="fbtn type-btn" onclick="applyTypeFilter(this)" data-type="foreign">Foreign</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Bank</th>
+          <th>Type</th>
+          <th>Verdict</th>
+          <th>Confidence</th>
+          <th>Model Accuracy</th>
+        </tr>
+      </thead>
+      <tbody id="bankTable">
+        {% for r in approved %}
+        <tr data-status="approved" data-bank="{{ r.bank }}">
+          <td>{{ r.bank }}</td>
+          <td><span class="type-badge" data-bank="{{ r.bank }}">—</span></td>
+          <td><span class="pill pill-ok">Approved</span></td>
+          <td>
+            <div class="conf-bar-wrap">
+              <div class="conf-bar"><div class="conf-bar-fill" style="width:{% if r.confidence %}{{ r.confidence }}%{% else %}0%{% endif %}"></div></div>
+              <div class="conf-num">{% if r.confidence %}{{ r.confidence }}%{% else %}—{% endif %}</div>
+            </div>
+          </td>
+          <td>{{ r.accuracy }}%</td>
+        </tr>
+        {% endfor %}
+        {% for r in rejected %}
+        <tr data-status="rejected" data-bank="{{ r.bank }}">
+          <td>{{ r.bank }}</td>
+          <td><span class="type-badge" data-bank="{{ r.bank }}">—</span></td>
+          <td><span class="pill pill-no">Rejected</span></td>
+          <td>
+            <div class="conf-bar-wrap">
+              <div class="conf-bar"><div class="conf-bar-fill" style="width:{% if r.confidence %}{{ r.confidence }}%{% else %}0%{% endif %}; background:var(--red)"></div></div>
+              <div class="conf-num">{% if r.confidence %}{{ r.confidence }}%{% else %}—{% endif %}</div>
+            </div>
+          </td>
+          <td>{{ r.accuracy }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+</div><!-- /page -->
+
+<script>
+// ── BANK TYPE MAP ──
+const bankTypes = {
+  'SBI':'public','Bank of Baroda':'public','Bank of India':'public',
+  'Bank of Maharashtra':'public','Canara Bank':'public','Central Bank of India':'public',
+  'Indian Bank':'public','Indian Overseas Bank':'public','Punjab National Bank':'public',
+  'Punjab and Sind Bank':'public','UCO Bank':'public','Union Bank of India':'public',
+  'NABARD':'public','NHB':'public','SIDBI':'public','EXIM Bank':'public',
+  'MUDRA Bank':'public','Nainital Bank':'public',
+  'HDFC Bank':'private','ICICI Bank':'private','Axis Bank':'private',
+  'Kotak Mahindra Bank':'private','IndusInd Bank':'private','Yes Bank':'private',
+  'IDFC FIRST Bank':'private','Federal Bank':'private','Bandhan Bank':'private',
+  'RBL Bank':'private','DCB Bank':'private','City Union Bank':'private',
+  'CSB Bank':'private','Dhanlaxmi Bank':'private','JK Bank':'private',
+  'Karnataka Bank':'private','Karur Vysya Bank':'private','South Indian Bank':'private',
+  'Tamilnad Mercantile Bank':'private',
+  'AU Small Finance Bank':'small','Equitas Small Finance':'small',
+  'ESAF Small Finance':'small','Fincare Small Finance':'small',
+  'Jana Small Finance':'small','NE Small Finance':'small',
+  'Suryoday Small Finance':'small','Ujjivan Small Finance':'small',
+  'Utkarsh Small Finance':'small','Capital Small Finance':'small',
+  'Citibank India':'foreign','HSBC India':'foreign','Deutsche Bank India':'foreign',
+  'Barclays Bank India':'foreign','BNP Paribas India':'foreign',
+  'DBS Bank India':'foreign','Societe Generale India':'foreign',
+  'Standard Chartered':'foreign','JP Morgan India':'foreign','Bank of America India':'foreign',
+};
+
+const typeLabels = { public:'Public', private:'Private', small:'Small Finance', foreign:'Foreign' };
+const typeClasses = { public:'type-public', private:'type-private', small:'type-small', foreign:'type-foreign' };
+
+// ── POPULATE TYPE BADGES ──
+document.querySelectorAll('.type-badge').forEach(badge => {
+  const bank = badge.dataset.bank;
+  const type = bankTypes[bank] || 'private';
+  badge.textContent = typeLabels[type] || 'Private';
+  badge.className = 'type-badge ' + (typeClasses[type] || 'type-private');
+  const row = badge.closest('tr');
+  if (row) row.dataset.type = type;
+});
+
+// ── ELIGIBILITY SCORE ──
+const dataEl = document.getElementById('d');
+if (dataEl) {
+  const approvedCount = parseInt(dataEl.dataset.approved) || 0;
+  const totalCount    = parseInt(dataEl.dataset.total) || 0;
+  const pct = totalCount > 0 ? Math.round((approvedCount / totalCount) * 100) : 0;
+
+  // animate number
+  const scoreNumEl = document.getElementById('scoreNum');
+  let cur = 0;
+  const t = setInterval(() => {
+    cur += 2; if (cur >= pct) { cur = pct; clearInterval(t); }
+    if (scoreNumEl) scoreNumEl.textContent = cur;
+  }, 18);
+
+  // verdict
+  const verdictEl = document.getElementById('scoreVerdict');
+  if (verdictEl) {
+    if (pct >= 70)      { verdictEl.textContent = 'Excellent'; verdictEl.className = 'verdict excellent'; }
+    else if (pct >= 40) { verdictEl.textContent = 'Good';      verdictEl.className = 'verdict good'; }
+    else                { verdictEl.textContent = 'Low';       verdictEl.className = 'verdict poor'; }
+  }
+
+  // ── DONUT CHART ──
+  const donutCtx = document.getElementById('donutChart');
+  if (donutCtx) {
+    new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Approved', 'Rejected'],
+        datasets: [{
+          data: [approvedCount, totalCount - approvedCount],
+          backgroundColor: ['rgba(46,204,113,.8)', 'rgba(231,76,60,.75)'],
+          borderColor: ['#2ecc71','#e74c3c'],
+          borderWidth: 2, hoverOffset: 8,
+        }]
+      },
+      options: {
+        responsive: true, cutout: '72%',
+        plugins: {
+          legend: { labels: { color: '#8a8a8a', font: { size: 12 }, padding: 16 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} banks` } }
+        }
+      }
+    });
+  }
+
+  // ── BAR CHART — top approved by confidence ──
+  const barCtx = document.getElementById('barChart');
+  if (barCtx) {
+    const rows = [...document.querySelectorAll('#bankTable tr[data-status="approved"]')]
+      .slice(0, 10)
+      .map(r => ({
+        name: r.querySelector('td').textContent.trim(),
+        conf: parseFloat(r.querySelector('.conf-num').textContent) || 0,
+      }));
+
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: rows.map(r => r.name),
+        datasets: [{
+          label: 'Confidence %',
+          data: rows.map(r => r.conf),
+          backgroundColor: 'rgba(201,168,76,.75)',
+          borderColor: '#c9a84c',
+          borderWidth: 1, borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            min: 50, max: 100,
+            grid: { color: 'rgba(255,255,255,.05)' },
+            ticks: { color: '#8a8a8a', callback: v => v + '%' }
+          },
+          y: { grid: { display: false }, ticks: { color: '#f5f0e8', font: { size: 11 } } }
+        }
+      }
+    });
+  }
+}
+
+// ── FILTERS ──
+let activeResult = 'all';
+let activeType   = 'all';
+
+function applyFilter(btn) {
+  document.querySelectorAll('.fbtn:not(.type-btn)').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeResult = btn.dataset.result;
+  runFilter();
+}
+function applyTypeFilter(btn) {
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeType = btn.dataset.type;
+  runFilter();
+}
+function runFilter() {
+  document.querySelectorAll('#bankTable tr').forEach(row => {
+    const matchResult = activeResult === 'all' || row.dataset.status === activeResult;
+    const matchType   = activeType   === 'all' || row.dataset.type   === activeType;
+    row.style.display = (matchResult && matchType) ? '' : 'none';
+  });
+}
+
+// ── PDF GENERATION ──
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth();
+  const margin = 20;
+  let y = 0;
+
+  // ── HEADER BAND ──
+  doc.setFillColor(10, 10, 15);
+  doc.rect(0, 0, W, 40, 'F');
+  doc.setTextColor(201, 168, 76);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.text('LOKKHI', margin, 18);
+  doc.setFontSize(9);
+  doc.setTextColor(138, 138, 138);
+  doc.text('Loan Prediction Report', margin, 26);
+  const today = new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  doc.text('Generated: ' + today, W - margin, 26, { align: 'right' });
+  y = 52;
+
+  // ── SINGLE BANK MODE ──
+  const mode = document.getElementById('d') ? 'all' : 'single';
+
+  if (mode === 'single') {
+    const verdictEl  = document.querySelector('.vc-verdict');
+    const bankEl     = document.querySelector('.vc-bank');
+    const isApproved = verdictEl && verdictEl.classList.contains('ok');
+    const bankName   = bankEl ? bankEl.textContent.trim() : '—';
+    const verdict    = isApproved ? 'APPROVED' : 'REJECTED';
+
+    // verdict box
+    const boxColor = isApproved ? [26, 107, 60] : [120, 30, 20];
+    doc.setFillColor(...boxColor);
+    doc.roundedRect(margin, y, W - margin*2, 36, 3, 3, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(bankName.toUpperCase(), margin + 10, y + 13);
+    doc.setFontSize(18);
+    doc.text(verdict, margin + 10, y + 27);
+    y += 48;
+
+    // stats row
+    const confEl = document.querySelector('.vc-stat .n');
+    const accEl  = document.querySelectorAll('.vc-stat .n')[1];
+    const conf   = confEl ? confEl.textContent.trim() : '—';
+    const acc    = accEl  ? accEl.textContent.trim()  : '—';
+
+    doc.setFillColor(20, 20, 30);
+    doc.rect(margin, y, (W - margin*2)/2 - 4, 24, 'F');
+    doc.rect(margin + (W - margin*2)/2 + 4, y, (W - margin*2)/2 - 4, 24, 'F');
+    doc.setTextColor(201, 168, 76); doc.setFontSize(16); doc.setFont('helvetica','bold');
+    doc.text(conf, margin + (W - margin*2)/4, y + 11, { align: 'center' });
+    doc.text(acc,  margin + (W - margin*2)*3/4, y + 11, { align: 'center' });
+    doc.setTextColor(138,138,138); doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text('Confidence', margin + (W - margin*2)/4, y + 19, { align: 'center' });
+    doc.text('Model Accuracy', margin + (W - margin*2)*3/4, y + 19, { align: 'center' });
+    y += 34;
+
+    // application details table
+    y += 6;
+    doc.setTextColor(201,168,76); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text('APPLICATION DETAILS', margin, y); y += 6;
+
+    const rows = [];
+    document.querySelectorAll('.info-row').forEach(r => {
+      const k = r.querySelector('.k');
+      const v = r.querySelector('.v');
+      if (k && v) rows.push([k.textContent.trim(), v.textContent.trim()]);
+    });
+    doc.autoTable({
+      startY: y, margin: { left: margin, right: margin },
+      head: [['Field', 'Value']],
+      body: rows,
+      styles: { fontSize: 10, cellPadding: 4, textColor: [200,200,200], fillColor: [15,15,25], lineColor: [40,40,60], lineWidth: 0.3 },
+      headStyles: { fillColor: [30,30,50], textColor: [201,168,76], fontStyle: 'bold', fontSize: 9 },
+      alternateRowStyles: { fillColor: [20,20,32] },
+    });
+
+  } else {
+    // ── ALL BANKS MODE ──
+    const dataEl = document.getElementById('d');
+    const approved = parseInt(dataEl.dataset.approved) || 0;
+    const total    = parseInt(dataEl.dataset.total) || 0;
+    const rejected = total - approved;
+    const pct = total > 0 ? Math.round((approved / total) * 100) : 0;
+    const verdict = pct >= 70 ? 'Excellent' : pct >= 40 ? 'Good' : 'Low';
+
+    // score band
+    const scoreColor = pct >= 70 ? [26,107,60] : pct >= 40 ? [120,90,10] : [120,30,20];
+    doc.setFillColor(...scoreColor);
+    doc.rect(margin, y, W - margin*2, 30, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(24);
+    doc.text(pct + '', margin + 10, y + 16);
+    doc.setFontSize(10);
+    doc.text('/ 100  Eligibility Score', margin + 24, y + 16);
+    doc.setFontSize(9); doc.setTextColor(200,200,200);
+    doc.text(verdict + ' — ' + approved + ' of ' + total + ' banks approved', margin + 10, y + 25);
+    y += 40;
+
+    // stats row
+    const stats = [
+      ['Total Banks', total, [60,60,80]],
+      ['Approved',    approved, [26,107,60]],
+      ['Rejected',    rejected, [120,30,20]],
+    ];
+    const bw = (W - margin*2 - 8) / 3;
+    stats.forEach(([label, val, color], i) => {
+      const bx = margin + i * (bw + 4);
+      doc.setFillColor(...color); doc.rect(bx, y, bw, 22, 'F');
+      doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(16);
+      doc.text(String(val), bx + bw/2, y + 11, { align: 'center' });
+      doc.setFontSize(7); doc.setTextColor(200,200,200);
+      doc.text(label.toUpperCase(), bx + bw/2, y + 18, { align: 'center' });
+    });
+    y += 32;
+
+    // collect table rows
+    const tableRows = [];
+    document.querySelectorAll('#bankTable tr:not([style*="none"])').forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length < 5) return;
+      const bank    = cells[0].textContent.trim();
+      const type    = cells[1].textContent.trim();
+      const verdict = cells[2].textContent.trim();
+      const conf    = cells[3].querySelector('.conf-num') ? cells[3].querySelector('.conf-num').textContent.trim() : '—';
+      const acc     = cells[4].textContent.trim();
+      tableRows.push([bank, type, verdict, conf, acc]);
+    });
+
+    // split into approved/rejected
+    const approvedRows = tableRows.filter(r => r[2] === 'Approved');
+    const rejectedRows = tableRows.filter(r => r[2] === 'Rejected');
+
+    if (approvedRows.length > 0) {
+      doc.setTextColor(201,168,76); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+      doc.text('APPROVED BANKS (' + approvedRows.length + ')', margin, y); y += 4;
+      doc.autoTable({
+        startY: y, margin: { left: margin, right: margin },
+        head: [['Bank', 'Type', 'Confidence', 'Accuracy']],
+        body: approvedRows.map(r => [r[0], r[1], r[3], r[4]]),
+        styles: { fontSize: 9, cellPadding: 3, textColor: [200,200,200], fillColor: [15,15,25], lineColor: [40,40,60], lineWidth: 0.3 },
+        headStyles: { fillColor: [26,107,60], textColor: [255,255,255], fontStyle: 'bold', fontSize: 8 },
+        alternateRowStyles: { fillColor: [20,20,32] },
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    }
+
+    if (rejectedRows.length > 0) {
+      if (y > 230) { doc.addPage(); y = 20; }
+      doc.setTextColor(231,76,60); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+      doc.text('REJECTED BANKS (' + rejectedRows.length + ')', margin, y); y += 4;
+      doc.autoTable({
+        startY: y, margin: { left: margin, right: margin },
+        head: [['Bank', 'Type', 'Confidence', 'Accuracy']],
+        body: rejectedRows.map(r => [r[0], r[1], r[3], r[4]]),
+        styles: { fontSize: 9, cellPadding: 3, textColor: [200,200,200], fillColor: [15,15,25], lineColor: [40,40,60], lineWidth: 0.3 },
+        headStyles: { fillColor: [120,30,20], textColor: [255,255,255], fontStyle: 'bold', fontSize: 8 },
+        alternateRowStyles: { fillColor: [20,20,32] },
+      });
+    }
+  }
+
+  // ── FOOTER ──
+  const pages = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setFillColor(10,10,15);
+    doc.rect(0, 287, W, 10, 'F');
+    doc.setTextColor(138,138,138); doc.setFontSize(7); doc.setFont('helvetica','normal');
+    doc.text('Lokkhi Loan Predictor — Powered by ML', margin, 293);
+    doc.text('Page ' + i + ' of ' + pages, W - margin, 293, { align: 'right' });
+  }
+
+  doc.save('lokkhi_loan_report.pdf');
+}
+</script>
+</body>
+</html>
