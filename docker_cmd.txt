@@ -1,0 +1,243 @@
+
+run this to see:->
+
+1.  docker build --no-cache -t ml56:latest . 
+2.  docker run -p 8000:8000 ml56:latest  
+
+
+
+═══════════════════════════════════════════════════════════════
+  DOCKER COMMANDS — Complete Reference for Beginners
+═══════════════════════════════════════════════════════════════
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. INSTALLATION CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker --version                  Check Docker is installed
+  docker info                       Full system info
+  docker help                       List all commands
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  2. IMAGES — Build, Pull, Push, List, Remove
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker build -t myapp .           Build image from Dockerfile in current folder
+  docker build -t myapp:v1 .        Build image with a version tag
+  docker build -t myapp -f path/Dockerfile .   Build using a specific Dockerfile
+
+  docker pull ubuntu                Download image from Docker Hub
+  docker pull python:3.11           Download specific version
+  docker push username/myapp        Upload image to Docker Hub
+
+  docker images                     List all downloaded images
+  docker images -a                  List all images including hidden layers
+
+  docker rmi myapp                  Delete an image
+  docker rmi myapp:v1               Delete a specific version
+  docker rmi $(docker images -q)    Delete ALL images (careful!)
+
+  docker image prune                Remove unused images
+  docker image prune -a             Remove all unused images
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  3. CONTAINERS — Run, Stop, Start, Remove
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker run myapp                  Run a container from image
+  docker run -p 8000:8000 myapp     Map port 8000 (host) to 8000 (container)
+  docker run -p 3000:8000 myapp     Map host port 3000 to container port 8000
+  docker run -d myapp               Run in background (detached mode)
+  docker run -it myapp bash         Run and open interactive terminal
+  docker run --name mycontainer myapp   Give container a custom name
+  docker run --rm myapp             Auto-remove container when it stops
+
+  docker run -d -p 8000:8000 --name myapp myapp    Most common combo
+
+  docker ps                         List running containers
+  docker ps -a                      List ALL containers (including stopped)
+
+  docker stop mycontainer           Gracefully stop a container
+  docker stop $(docker ps -q)       Stop ALL running containers
+
+  docker start mycontainer          Start a stopped container
+  docker restart mycontainer        Restart a container
+
+  docker rm mycontainer             Delete a stopped container
+  docker rm -f mycontainer          Force delete (even if running)
+  docker rm $(docker ps -aq)        Delete ALL stopped containers
+
+  docker container prune            Remove all stopped containers
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  4. LOGS & MONITORING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker logs mycontainer           View logs of a container
+  docker logs -f mycontainer        Follow logs in real time (like tail -f)
+  docker logs --tail 50 mycontainer Show last 50 lines of logs
+
+  docker stats                      Live CPU/memory usage of all containers
+  docker stats mycontainer          Live stats for one container
+  docker top mycontainer            Show running processes inside container
+
+  docker inspect mycontainer        Full JSON details about container
+  docker inspect myimage            Full JSON details about image
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  5. EXECUTE COMMANDS INSIDE CONTAINER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker exec -it mycontainer bash          Open bash shell inside container
+  docker exec -it mycontainer sh            Open sh shell (if bash not available)
+  docker exec mycontainer ls /app           Run a single command inside container
+  docker exec mycontainer python --version  Check python version inside container
+
+  NOTE: Container must be RUNNING to use exec
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  6. VOLUMES — Persist Data
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker volume create myvolume             Create a volume
+  docker volume ls                          List all volumes
+  docker volume inspect myvolume            Details of a volume
+  docker volume rm myvolume                 Delete a volume
+  docker volume prune                       Remove all unused volumes
+
+  docker run -v myvolume:/app/data myapp    Mount volume to container
+  docker run -v /host/path:/container/path myapp   Mount host folder to container
+  docker run -v $(pwd):/app myapp           Mount current directory to /app
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  7. ENVIRONMENT VARIABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker run -e SECRET_KEY=abc123 myapp         Pass one env variable
+  docker run -e DEBUG=False -e PORT=8000 myapp  Pass multiple env variables
+  docker run --env-file .env myapp              Load from .env file
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  8. NETWORKING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker network ls                         List all networks
+  docker network create mynetwork           Create a custom network
+  docker network inspect mynetwork          Details of a network
+  docker network rm mynetwork               Delete a network
+
+  docker run --network mynetwork myapp      Run container on custom network
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  9. DOCKER COMPOSE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker compose up                 Start all services defined in docker-compose.yml
+  docker compose up -d              Start all services in background
+  docker compose up --build         Rebuild images before starting
+  docker compose down               Stop and remove all containers
+  docker compose down -v            Stop containers and delete volumes too
+  docker compose logs               View logs of all services
+  docker compose logs -f            Follow logs in real time
+  docker compose ps                 List containers managed by compose
+  docker compose restart            Restart all services
+  docker compose build              Just build images without starting
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  10. COPY FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker cp mycontainer:/app/file.txt .         Copy file FROM container to host
+  docker cp ./file.txt mycontainer:/app/        Copy file FROM host TO container
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  11. CLEANUP — Free Up Space
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker system df                  Show disk usage by Docker
+  docker system prune               Remove all unused containers, images, networks
+  docker system prune -a            Remove everything unused (including images)
+  docker system prune --volumes     Remove everything including volumes
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  12. DOCKER HUB — Login & Publish
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker login                              Login to Docker Hub
+  docker logout                             Logout
+
+  docker tag myapp username/myapp:v1        Tag image before pushing
+  docker push username/myapp:v1             Push to Docker Hub
+  docker pull username/myapp:v1             Pull your image on another machine
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  13. REAL WORLD WORKFLOW — Step by Step
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Step 1 — Build your image
+  docker build -t myapp .
+
+  Step 2 — Run it locally
+  docker run -d -p 8000:8000 --name myapp myapp
+
+  Step 3 — Check it is running
+  docker ps
+
+  Step 4 — See logs
+  docker logs -f myapp
+
+  Step 5 — Open browser
+  http://127.0.0.1:8000
+
+  Step 6 — Stop it
+  docker stop myapp
+
+  Step 7 — Clean up
+  docker rm myapp
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  14. QUICK REFERENCE — Most Used Commands
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docker build -t myapp .                   Build
+  docker run -d -p 8000:8000 myapp          Run
+  docker ps                                 List running
+  docker logs -f myapp                      Logs
+  docker exec -it myapp bash                Enter container
+  docker stop myapp                         Stop
+  docker rm myapp                           Delete container
+  docker rmi myapp                          Delete image
+  docker system prune -a                    Clean everything
+
+
+═══════════════════════════════════════════════════════════════
+  COMMON FLAGS EXPLAINED
+═══════════════════════════════════════════════════════════════
+
+  -d          Detached — run in background
+  -it         Interactive terminal — stay inside container
+  -p          Port mapping — host:container
+  -v          Volume — mount folder or file
+  -e          Environment variable
+  --name      Give container a name
+  --rm        Auto-remove container when stopped
+  --build     Force rebuild before running
+  -f          Follow (for logs) or specify file (for build)
+  -a          All (include stopped containers/unused images)
+  -q          Quiet — only show IDs
+
+═══════════════════════════════════════════════════════════════
